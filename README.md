@@ -32,3 +32,5 @@ EOF
 echo "DATABASE_URL=postgres://$PGUSER:$PASS@localhost/$DB" >> .env
 echo "✅ Database, user, and .env file created. Edit .env if needed."
 ```
+
+Then just `npx drizzle-kit create` to create your `schema.ts` and you are ready to deploy with `npm publish`.
