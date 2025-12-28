@@ -1,28 +1,30 @@
 {
-  "name": "apigen",
-  "version": "1.0.0",
-  "description": "Postgres DB / Express Backend API generator",
+  "name": "@voscarmv/aimessagestore",
+  "version": "1.0.8",
+  "description": "Message storage and retrieval for aichatbot framework ",
   "keywords": [
+    "ai",
     "api",
-    "generator",
-    "express",
-    "postgresql",
-    "psql",
-    "backend",
+    "database",
     "drizzle",
-    "morgan",
-    "helmet",
-    "pg",
-    "cors",
-    "typescript"
+    "chatbot",
+    "message",
+    "storage",
+    "store",
+    "queue",
+    "concurrent",
+    "im",
+    "telegram",
+    "whatsapp",
+    "signal"
   ],
-  "homepage": "https://github.com/voscarmv/apigen#readme",
+  "homepage": "https://github.com/voscarmv/aimessagestore#readme",
   "bugs": {
-    "url": "https://github.com/voscarmv/apigen/issues"
+    "url": "https://github.com/voscarmv/aimessagestore/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/voscarmv/apigen.git"
+    "url": "git+https://github.com/voscarmv/aimessagestore.git"
   },
   "license": "GPL-3.0-or-later",
   "author": "Oscar Mier",
