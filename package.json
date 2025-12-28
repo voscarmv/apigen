@@ -1,6 +1,6 @@
 {
   "name": "@voscarmv/apigen",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Postgres DB / Express Backend API generator",
   "keywords": [
     "api",

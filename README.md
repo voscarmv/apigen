@@ -5,13 +5,13 @@ A simple, flexible Express backend generator with Drizzle ORM integration.
 ## Installation
 
 ```bash
-npm install dynamic-store-backend
+npm install @voscarmv/apigen
 ```
 
 ## Basic Usage
 
 ```typescript
-import { DynamicStoreBackend } from 'dynamic-store-backend';
+import { DynamicStoreBackend } from '@voscarmv/apigen';
 import { users } from './schema.js'; // Your Drizzle schema
 import { eq } from 'drizzle-orm';
 
@@ -78,7 +78,7 @@ Starts the Express server.
 ## Complete Example
 
 ```typescript
-import { DynamicStoreBackend } from 'dynamic-store-backend';
+import { DynamicStoreBackend } from '@voscarmv/apigen';
 import { tasks } from './schema.js';
 import { eq } from 'drizzle-orm';
 
