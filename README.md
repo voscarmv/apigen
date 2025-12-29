@@ -8,6 +8,10 @@ A simple, flexible Express backend generator with Drizzle ORM integration.
 npm install @voscarmv/apigen
 ```
 
+## Basic demo
+
+See a working demo [here.](https://github.com/voscarmv/backendapi)
+
 ## Basic Usage
 
 ```typescript
