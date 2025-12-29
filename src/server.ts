@@ -55,11 +55,11 @@ export class DynamicStoreBackend implements StoreBackend {
     route(
         method: 'get' | 'post' | 'put' | 'delete' | 'patch',
         path: string,
-        handler: (db: NodePgDatabase<Record<string, never>>, req: Request, res: Response) => void | Promise<void>,
+        handler: (db: NodePgDatabase<Record<string, never>>, req: Request, res: Response) => Promise<void>,
         authMiddleware?: (req: Request, res: Response, next: () => void) => void | Promise<void>
     ) {
-        const wrappedHandler: RequestHandler = (req, res) => {
-            return handler(this.#db, req, res);
+        const wrappedHandler: RequestHandler = async (req, res) => {
+            await handler(this.#db, req, res);
         };
 
         const middlewares: RequestHandler[] = [];
