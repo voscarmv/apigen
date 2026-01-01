@@ -15,7 +15,7 @@ export type DynamicStoreBackendParams = {
     corsOpts?: CorsOptions;
 };
 
-type RouteParams = {
+export type RouteParams = {
     method: 'get' | 'post' | 'put' | 'delete' | 'patch';
     path: string;
     handler: (db: NodePgDatabase<Record<string, never>>, req: Request, res: Response) => Promise<void>;
