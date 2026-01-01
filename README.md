@@ -58,7 +58,6 @@ Creates a new backend instance.
 - `dbUrl` (string): PostgreSQL connection string
 - `port` (number): Port to run server on
 - `corsOpts` (optional): CORS configuration
-- `migrationsFolder` (optional): Path to migrations folder
 
 ### `backend.route(method, path, handler, authMiddleware?)`
 
@@ -68,11 +67,7 @@ Adds a new route to the server.
 - `method`: HTTP method (`'get' | 'post' | 'put' | 'delete' | 'patch'`)
 - `path`: Route path (e.g., `/users/:id`)
 - `handler`: Request handler `(db, req, res) => void`
-- `authMiddleware` (optional): Auth middleware `(req, res, next) => void`
-
-### `backend.migrate()`
-
-Runs database migrations.
+- `...middlewares` (optional): Middlewares `(req, res, next) => void, ...`
 
 ### `backend.listen()`
 

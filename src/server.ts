@@ -13,14 +13,12 @@ export type DynamicStoreBackendParams = {
     dbUrl: string;
     port: number;
     corsOpts?: CorsOptions;
-    migrationsFolder?: string;
 };
 
 export class DynamicStoreBackend implements StoreBackend {
     #db: NodePgDatabase<Record<string, never>>;
     #app: Express;
     #port: number;
-    #migrationsFolder: string;
 
     constructor(params: DynamicStoreBackendParams) {
         this.#db = drizzle(params.dbUrl);
@@ -37,7 +35,6 @@ export class DynamicStoreBackend implements StoreBackend {
         this.#app.use(express.json());
         
         this.#port = params.port;
-        this.#migrationsFolder = params.migrationsFolder || `${__dirname}/drizzle`;
     }
 
     // Enhanced route method that accepts multiple middlewares
