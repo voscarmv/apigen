@@ -44,7 +44,6 @@ backend.route('post', '/users', async (db, req, res) => {
 }, requireAuth);
 
 // Start server
-await backend.migrate();
 backend.listen();
 console.log('Server running on port 3000');
 ```
@@ -117,6 +116,5 @@ backend.route('post', '/tasks', async (db, req, res) => {
     next();
 });
 
-await backend.migrate();
 backend.listen();
 ```
