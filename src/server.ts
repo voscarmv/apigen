@@ -15,6 +15,13 @@ export type DynamicStoreBackendParams = {
     corsOpts?: CorsOptions;
 };
 
+type RouteParams = {
+    method: 'get' | 'post' | 'put' | 'delete' | 'patch';
+    path: string;
+    handler: (db: NodePgDatabase<Record<string, never>>, req: Request, res: Response) => Promise<void>;
+    middlewares?: RequestHandler[];
+};
+
 export class DynamicStoreBackend implements StoreBackend {
     #db: NodePgDatabase<Record<string, never>>;
     #app: Express;
@@ -37,18 +44,13 @@ export class DynamicStoreBackend implements StoreBackend {
         this.#port = params.port;
     }
 
-    // Enhanced route method that accepts multiple middlewares
-    route(
-        method: 'get' | 'post' | 'put' | 'delete' | 'patch',
-        path: string,
-        handler: (db: NodePgDatabase<Record<string, never>>, req: Request, res: Response) => Promise<void>,
-        ...middlewares: RequestHandler[]
-    ) {
+    route(params: RouteParams) {
+        const { method, path, handler, middlewares = [] } = params;
+        
         const wrappedHandler: RequestHandler = async (req, res) => {
             await handler(this.#db, req, res);
         };
 
-        // Apply all middlewares in order, then the handler
         this.#app[method](path, ...middlewares, wrappedHandler);
     }
 

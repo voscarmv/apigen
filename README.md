@@ -3,7 +3,6 @@
 A simple, flexible Express backend generator with Drizzle ORM integration.
 
 ## Installation
-
 ```bash
 npm install @voscarmv/apigen
 ```
@@ -13,7 +12,6 @@ npm install @voscarmv/apigen
 See a working demo [here.](https://github.com/voscarmv/backendapi)
 
 ## Basic Usage
-
 ```typescript
 import { DynamicStoreBackend } from '@voscarmv/apigen';
 import { users } from './schema.js'; // Your Drizzle schema
@@ -26,22 +24,31 @@ const backend = new DynamicStoreBackend({
 });
 
 // Add a public route
-backend.route('get', '/users', async (db, req, res) => {
-    const allUsers = await db.select().from(users);
-    res.json(allUsers);
+backend.route({
+    method: 'get',
+    path: '/users',
+    handler: async (db, req, res) => {
+        const allUsers = await db.select().from(users);
+        res.json(allUsers);
+    }
 });
 
-// Add a route with auth
+// Add a route with auth middleware
 const requireAuth = (req, res, next) => {
     const token = req.headers.authorization;
     if (!token) return res.status(401).json({ error: 'Unauthorized' });
     next();
 };
 
-backend.route('post', '/users', async (db, req, res) => {
-    const newUser = await db.insert(users).values(req.body).returning();
-    res.json(newUser[0]);
-}, requireAuth);
+backend.route({
+    method: 'post',
+    path: '/users',
+    middlewares: [requireAuth],
+    handler: async (db, req, res) => {
+        const newUser = await db.insert(users).values(req.body).returning();
+        res.json(newUser[0]);
+    }
+});
 
 // Start server
 backend.listen();
@@ -52,29 +59,28 @@ console.log('Server running on port 3000');
 
 ### `new DynamicStoreBackend(params)`
 
-Creates a new backend instance.
+Creates a new backend instance with pre-configured middleware (CORS, Helmet, Morgan, JSON parsing).
 
 **Parameters:**
 - `dbUrl` (string): PostgreSQL connection string
 - `port` (number): Port to run server on
-- `corsOpts` (optional): CORS configuration
+- `corsOpts` (optional): CORS configuration object
 
-### `backend.route(method, path, handler, authMiddleware?)`
+### `backend.route(params)`
 
 Adds a new route to the server.
 
-**Parameters:**
+**Parameters object:**
 - `method`: HTTP method (`'get' | 'post' | 'put' | 'delete' | 'patch'`)
 - `path`: Route path (e.g., `/users/:id`)
-- `handler`: Request handler `(db, req, res) => void`
-- `...middlewares` (optional): Middlewares `(req, res, next) => void, ...`
+- `handler`: Request handler function `(db, req, res) => Promise<void>`
+- `middlewares` (optional): Array of Express middleware functions
 
 ### `backend.listen()`
 
-Starts the Express server.
+Starts the Express server on the configured port.
 
 ## Complete Example
-
 ```typescript
 import { DynamicStoreBackend } from '@voscarmv/apigen';
 import { tasks } from './schema.js';
@@ -86,30 +92,74 @@ const backend = new DynamicStoreBackend({
 });
 
 // Get all tasks
-backend.route('get', '/tasks', async (db, req, res) => {
-    const allTasks = await db.select().from(tasks);
-    res.json(allTasks);
+backend.route({
+    method: 'get',
+    path: '/tasks',
+    handler: async (db, req, res) => {
+        const allTasks = await db.select().from(tasks);
+        res.json(allTasks);
+    }
 });
 
 // Get task by ID
-backend.route('get', '/tasks/:id', async (db, req, res) => {
-    const task = await db
-        .select()
-        .from(tasks)
-        .where(eq(tasks.id, req.params.id));
-    res.json(task[0]);
+backend.route({
+    method: 'get',
+    path: '/tasks/:id',
+    handler: async (db, req, res) => {
+        const task = await db
+            .select()
+            .from(tasks)
+            .where(eq(tasks.id, req.params.id));
+        res.json(task[0]);
+    }
 });
 
-// Create task (protected)
-backend.route('post', '/tasks', async (db, req, res) => {
-    const newTask = await db.insert(tasks).values(req.body).returning();
-    res.json(newTask[0]);
-}, (req, res, next) => {
+// Create task with API key auth
+const apiKeyAuth = (req, res, next) => {
     if (req.headers['x-api-key'] !== 'secret') {
         return res.status(403).json({ error: 'Forbidden' });
     }
     next();
+};
+
+backend.route({
+    method: 'post',
+    path: '/tasks',
+    middlewares: [apiKeyAuth],
+    handler: async (db, req, res) => {
+        const newTask = await db.insert(tasks).values(req.body).returning();
+        res.json(newTask[0]);
+    }
 });
 
 backend.listen();
 ```
+
+## Using Multiple Middlewares
+
+You can chain multiple middlewares for complex authentication, validation, or processing:
+```typescript
+import multer from 'multer';
+
+const upload = multer({ storage: multer.memoryStorage() });
+
+backend.route({
+    method: 'post',
+    path: '/upload',
+    middlewares: [requireAuth, upload.single('file'), validateFile],
+    handler: async (db, req, res) => {
+        // Access uploaded file via req.file
+        res.json({ success: true, filename: req.file?.originalname });
+    }
+});
+```
+
+## Features
+
+- 🚀 Quick Express + Drizzle setup
+- 🔒 Built-in security with Helmet
+- 🌐 CORS support out of the box
+- 📝 Request logging with Morgan
+- 🔧 Flexible middleware support
+- 💾 Direct database access in handlers
+- 📦 TypeScript support
