@@ -46,12 +46,17 @@ export class DynamicStoreBackend implements StoreBackend {
 
     route(params: RouteParams) {
         const { method, path, handler, middlewares = [] } = params;
-        
+            const wrappedMiddlewares = middlewares.map(mw => {
+        const wrapped: RequestHandler = async (req, res, next) => {
+            await mw(this.#db, req, res, next);
+        };
+        return wrapped;
+    });
         const wrappedHandler: RequestHandler = async (req, res) => {
             await handler(this.#db, req, res);
         };
 
-        this.#app[method](path, ...middlewares, wrappedHandler);
+        this.#app[method](path, ...wrappedMiddlewares, wrappedHandler);
     }
 
     listen() {
