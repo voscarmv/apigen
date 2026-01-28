@@ -30,28 +30,29 @@ export class DynamicStoreBackend implements StoreBackend {
     constructor(params: DynamicStoreBackendParams) {
         this.#db = drizzle(params.dbUrl);
         this.#app = express();
-        
+
         if (params.corsOpts) {
             this.#app.use(cors(params.corsOpts));
         } else {
             this.#app.use(cors());
         }
-        
+
         this.#app.use(helmet());
         this.#app.use(morgan("combined"));
-        this.#app.use(express.json());
-        
+        this.#app.use(express.json({ limit: '50mb' }));
+        this.#app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
         this.#port = params.port;
     }
 
     route(params: RouteParams) {
         const { method, path, handler, middlewares = [] } = params;
-            const wrappedMiddlewares = middlewares.map(mw => {
-        const wrapped: RequestHandler = async (req, res, next) => {
-            await mw(this.#db, req, res, next);
-        };
-        return wrapped;
-    });
+        const wrappedMiddlewares = middlewares.map(mw => {
+            const wrapped: RequestHandler = async (req, res, next) => {
+                await mw(req, res, next);
+            };
+            return wrapped;
+        });
         const wrappedHandler: RequestHandler = async (req, res) => {
             await handler(this.#db, req, res);
         };
