@@ -57,6 +57,10 @@ export class DynamicStoreBackend implements StoreBackend {
         this.#port = params.port;
     }
 
+    get db(): NodePgDatabase<Record<string, never>> {
+        return this.#db;
+    }
+
     useMiddleware(type: ExpressMiddlewareType, options?: MiddlewareOptions) {
         if (type === 'static') {
             this.#app.use(express.static(options?.path || 'public', options));
